@@ -23,9 +23,6 @@ jobs:
 
 
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v4
-
     - uses: actions/download-artifact@v4
       with:
         name: helm-package
@@ -63,6 +60,7 @@ jobs:
         --set todoapp.secrets.DB_USER="${{ secrets.DB_USER }}" \
         --set todoapp.secrets.DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
         --set todoapp.secrets.DB_HOST="${{ secrets.DB_HOST }}"
+
 
 
 
