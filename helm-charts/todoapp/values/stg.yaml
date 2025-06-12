@@ -3,7 +3,10 @@ todoapp:
   image:
     repository: orestprogrammer/todoapp
     tag: "5a466861c723eaab5ea8b7405242d3d9867471ab"
-    
+
+mysql:
+  namespace: mysql-staging
+  
   resources:
     requests:
       memory: "256Mi"

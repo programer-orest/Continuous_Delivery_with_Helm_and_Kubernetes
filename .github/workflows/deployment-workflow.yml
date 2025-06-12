@@ -15,17 +15,17 @@ on:
       helm-release-name:
         type: string
         default: todoapp
+      namespace:
+        type: string
+        default: todoapp
 
 jobs:
   deploy-helm:
     name: ${{ inputs.environment }}
     runs-on: ubuntu-latest
-
+    environment: ${{ inputs.environment }}
 
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v4
-
     - uses: actions/download-artifact@v4
       with:
         name: helm-package
@@ -55,6 +55,9 @@ jobs:
       run: |
         helm upgrade --install --atomic --wait --timeout 3600s --debug ${{ inputs.helm-release-name }} ./todoapp-*.tgz \
         -f ${{ inputs.helm-values-path }} \
+        --namespace ${{ inputs.namespace}} \
+        --create-namespace \
+        --set todoapp.namespace=${{ inputs.namespace }} \
         --set mysql.secrets.MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD}}" \
         --set mysql.secrets.MYSQL_USER="${{ secrets.MYSQL_USER}}" \
         --set mysql.secrets.MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD}}" \
@@ -63,4 +66,7 @@ jobs:
         --set todoapp.secrets.DB_USER="${{ secrets.DB_USER }}" \
         --set todoapp.secrets.DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
         --set todoapp.secrets.DB_HOST="${{ secrets.DB_HOST }}"
+
+
+
 
