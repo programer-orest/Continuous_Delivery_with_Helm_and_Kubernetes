@@ -1,0 +1,58 @@
+name: helm-deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+      helm-values-path:
+        type: string
+        default: './todoapp/values.yaml'
+      helm-release-name:
+        type: string
+        default: todoapp
+
+jobs:
+  deploy-helm:
+    name: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+
+
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: helm-package
+        path: .
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: helm-artifacts
+        path: .
+
+    - name: SetUp Helm
+      uses: azure/setup-helm@v4.2.0
+
+    - name: SetUp Kubectl
+      uses: azure/setup-kubectl@v4
+
+    - name: Run Kind Cluster
+      run: |
+        kind create cluster --config ../cluster.yml
+
+    - name: Deploy Helm to Development
+      run: |
+        helm upgrade --install --atomic --wait --timeout 3600s --dry-run --debug ${{ inputs.helm-release }} ./todoapp-*.tgz
+        -f ${{ inputs.helm-values-path }}
+        --set mysql.secrets.MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD}}" \
+        --set mysql.secrets.MYSQL_USER="${{ secrets.MYSQL_USER}}" \
+        --set mysql.secrets.MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD}}" \
+        --set todoapp.secrets.SECRET_KEY="${{ secrets.SECRET_KEY }}" \
+        --set todoapp.secrets.DB_NAME="${{ secrets.DB_NAME }}" \
+        --set todoapp.secrets.DB_USER="${{ secrets.DB_USER }}" \
+        --set todoapp.secrets.DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+        --set todoapp.secrets.DB_HOST="${{ secrets.DB_HOST }}"
+

@@ -1,14 +1,14 @@
 mysql:
   secrets:
-    MYSQL_ROOT_PASSWORD: 12345
-    MYSQL_USER: app_user
-    MYSQL_PASSWORD: 1234
+    MYSQL_ROOT_PASSWORD: placeholder
+    MYSQL_USER: placeholder
+    MYSQL_PASSWORD: placeholder
 
 todoapp:
   namespace: todoapp
   image:
-    repository: ikulyk404/todoapp
-    tag: "4.0.1"
+    repository: orestprogrammer/todoapp
+    tag: "5a466861c723eaab5ea8b7405242d3d9867471ab"
 
   resources:
     requests:
