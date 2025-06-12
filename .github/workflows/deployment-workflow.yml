@@ -42,13 +42,18 @@ jobs:
     - name: SetUp Kubectl
       uses: azure/setup-kubectl@v4
 
-    - name: Run Kind Cluster
-      run: |
-        kind create cluster --config ./cluster.yml
+    - uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - uses: azure/aks-set-context@v4
+      with:
+        resource-group: ${{ vars.AZURE_RESOURCE_GROUP }}
+        cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
 
     - name: Deploy Helm to Development
       run: |
-        helm upgrade --install --atomic --debug ${{ inputs.helm-release-name }} ./todoapp-*.tgz \
+        helm upgrade --install --atomic --wait --timeout 3600s --debug ${{ inputs.helm-release-name }} ./todoapp-*.tgz \
         -f ${{ inputs.helm-values-path }} \
         --set mysql.secrets.MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD}}" \
         --set mysql.secrets.MYSQL_USER="${{ secrets.MYSQL_USER}}" \
@@ -59,19 +64,3 @@ jobs:
         --set todoapp.secrets.DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
         --set todoapp.secrets.DB_HOST="${{ secrets.DB_HOST }}"
 
-    - name: Wait for pods to be ready
-      run: |
-        for i in {1..30}; do
-          READY=($kubectl get deploy ${{ inputs.helm-release-name }} -o jsonpath='{.status.readyReplicas}')
-          if [["$READY" == 1 ]]; then
-            echo "Deployment is ready"
-            exit 0
-          fi
-          echo "Waiting for deployment to be ready"
-          kubectl get pods -A
-          sleep 10
-        done
-        echo "Deployment is not ready"
-        kubectl describe pods -A
-        kubectl logs -A --all-containers=true || true
-        exit 1

@@ -1,8 +1,9 @@
 todoapp:
   namespace: todoapp
   image:
-    repository: ikulyk404/todoapp
-
+    repository: orestprogrammer/todoapp
+    tag: "5a466861c723eaab5ea8b7405242d3d9867471ab"
+    
   resources:
     requests:
       memory: "256Mi"
