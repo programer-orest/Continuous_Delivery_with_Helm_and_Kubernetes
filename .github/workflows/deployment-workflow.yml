@@ -57,7 +57,7 @@ jobs:
         -f ${{ inputs.helm-values-path }} \
         --namespace ${{ inputs.namespace}} \
         --create-namespace \
-        --set todoapp.namespace=${{ inputs.namespace }}
+        --set todoapp.namespace=${{ inputs.namespace }} \
         --set mysql.secrets.MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD}}" \
         --set mysql.secrets.MYSQL_USER="${{ secrets.MYSQL_USER}}" \
         --set mysql.secrets.MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD}}" \
