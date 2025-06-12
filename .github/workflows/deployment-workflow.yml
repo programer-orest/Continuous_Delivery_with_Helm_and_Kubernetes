@@ -15,6 +15,9 @@ on:
       helm-release-name:
         type: string
         default: todoapp
+      namespace:
+        type: string
+        default: todoapp
 
 jobs:
   deploy-helm:
@@ -52,6 +55,8 @@ jobs:
       run: |
         helm upgrade --install --atomic --wait --timeout 3600s --debug ${{ inputs.helm-release-name }} ./todoapp-*.tgz \
         -f ${{ inputs.helm-values-path }} \
+        --namespace ${{ inputs.namespace}} \
+        --create-namespace \
         --set mysql.secrets.MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD}}" \
         --set mysql.secrets.MYSQL_USER="${{ secrets.MYSQL_USER}}" \
         --set mysql.secrets.MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD}}" \
