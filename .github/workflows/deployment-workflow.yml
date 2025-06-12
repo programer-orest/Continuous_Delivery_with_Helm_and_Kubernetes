@@ -41,7 +41,7 @@ jobs:
 
     - name: Run Kind Cluster
       run: |
-        kind create cluster --config ../cluster.yml
+        kind create cluster --config ./cluster.yml
 
     - name: Deploy Helm to Development
       run: |
