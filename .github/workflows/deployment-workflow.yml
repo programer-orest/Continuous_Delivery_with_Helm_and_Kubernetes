@@ -25,7 +25,7 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
-      
+
     - uses: actions/download-artifact@v4
       with:
         name: helm-package
@@ -48,7 +48,7 @@ jobs:
 
     - name: Deploy Helm to Development
       run: |
-        helm upgrade --install --atomic --wait --timeout 3600s --dry-run --debug ${{ inputs.helm-release }} ./todoapp-*.tgz
+        helm upgrade --install --atomic --wait --timeout 3600s --dry-run --debug ${{ inputs.helm-release-name }} ./todoapp-*.tgz
         -f ${{ inputs.helm-values-path }}
         --set mysql.secrets.MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD}}" \
         --set mysql.secrets.MYSQL_USER="${{ secrets.MYSQL_USER}}" \
