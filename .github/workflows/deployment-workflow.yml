@@ -64,3 +64,4 @@ jobs:
         --set todoapp.secrets.DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
         --set todoapp.secrets.DB_HOST="${{ secrets.DB_HOST }}"
 
+
