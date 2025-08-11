@@ -1,48 +1,47 @@
-# Django ToDo list
+# CI/CD Pipeline for Django Todoapp with Helm on Azure Kubernetes Service using GitHub Actions
 
-This is a to-do list web application with basic features of most web apps, i.e., accounts/login, API, and interactive UI. 
-To complete this task, you will need:
+## Project Overview
 
-- CSS | [Skeleton](http://getskeleton.com/)
-- JS  | [jQuery](https://jquery.com/)
+This project demonstrates a complete CI/CD pipeline for a Django TodoList application using GitHub Actions, Docker, Helm, and Kubernetes (Azure Kubernetes Service).  
+The application is packaged using a Helm chart and deployed to different environments (development and staging) via reusable workflows.
 
-## Explore
+## Tech Stack
 
-Follow these steps to get the application up and running on your local machine (requires Python 3.8 or higher due to compatibility with Django 4):
+- **Python (Django)**  
+- **Docker & DockerHub**  
+- **Helm**  
+- **Kubernetes (Azure Kubernetes Service)**  
+- **GitHub Actions (CI/CD)**  
+- **GitHub Actions Environments & Secrets**
 
-```
-pip install -r requirements.txt
-```
+## What Was Done
 
-Create a database schema:
+- Created a Docker image of the Django application using semantic versioning. The image is built and tagged automatically via GitHub Actions.  
 
-```
-python manage.py migrate
-```
+- Stored DockerHub credentials, Azure credentials, and other sensitive data as GitHub Actions repository/environment secrets.  
 
-And then start the server (default is <http://localhost:8000>):
+- Developed a main and reusable GitHub Actions workflow to deploy Helm charts to an Azure Kubernetes Service (AKS) cluster.  
 
-```
-python manage.py runserver
-```
+- **Continuous Integration** includes:  
+  - `python-ci`  
+  - `docker-ci`  
+  - `helm-ci`  
 
-Now you can browse the [API](http://localhost:8000/api/) or start on the [landing page](http://localhost:8000/).
+- **Continuous Deployment** handled via a reusable workflow (`deployment-workflow.yml`) and triggered automatically on push to `main`:  
+  - Authenticates into Azure and sets AKS context.  
+  - Performs Helm dry-run to catch release issues early.  
+  - Executes atomic `helm upgrade --install` to ensure safe deployment.  
+  - Supports multiple environments:  
+    - `development`  
+    - `staging` (with custom values in `stg.yaml`)  
 
-## Task
+- **Helm Charts included:**  
+  - `todoapp/`: Helm chart for the Django application.  
+  - `mysql/`: Reused chart from a previous task for MySQL backend.
 
-Extend the project's GitHub Actions workflow by integrating Docker to build and push images to DockerHub. 
-This CI/CD enhancement involves several key tasks:
+## Pipeline Triggering
 
-1. Update your forked repository with your DockerHub username and password.
-    1. Add corresponding secrets to the repository.
-2. Update `DockerImageName` with your DockerHub image repository name.
-3. Add a resubable workflow to deploy to `kind` kubernetes cluster.
-    1. Reusable workflow should allow to deploy to different `environments`.
-    1. Add steps to spin up a `kind` cluster from a `cluster.yml` file.
-    1. Job should contain a step with `helm install --dry-run` command.
-    1. Job should contain a step to run `helm upgrade --install` command. This command should be `atomic` and should not allow to deploy a broken release.
-    1. All secrets should be stored in the environment secrets.
-4. Call reusable workflow to deploy to `development` environment.
-5. Call reusable workflow to deploy to `staging` environment.
-6. Create a pull request with the changes.
-7. Pull request's description should also contain a reference to a successful workflow run.
+- On push to the `main` branch  
+- On pull request targeting `main`  
+- Manually via `workflow_dispatch`
+
